@@ -1,0 +1,31 @@
+Name: harbour-ttrss
+Summary: TT-RSS Light
+Version: 0.2
+Release: 3
+Group: Qt/Qt
+URL: http://www.ruff.mobi/go/mobi/ttrss.html
+License: LICENSE
+Sources:
+- '%{name}-%{version}.tar.bz2'
+Description: |-
+  TinyTiny RSS Client - QML online client.
+  No offline storage backend for light version.
+Configure: none
+Builder: qtc5
+PkgConfigBR:
+- Qt5Quick
+- Qt5Qml
+- Qt5Core
+- sailfishapp >= 0.0.10
+Requires:
+- sailfishsilica-qt5 >= 0.10.9
+Files:
+- '%{_bindir}'
+- '%{_datadir}/%{name}/qml'
+- '%{_datadir}/applications/%{name}.desktop'
+- '%{_datadir}/icons/hicolor/86x86/apps/%{name}.png'
+- /usr/bin
+- /usr/share/applications
+- /usr/share/icons/hicolor/86x86/apps
+- /usr/share/harbour-ttrss
+PkgBR: []
