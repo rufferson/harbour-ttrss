@@ -46,9 +46,11 @@ ApplicationWindow
     property bool dlim: false
     property bool svpw: false
     property int txsz: Theme.fontSizeTiny
+    property int alor: 2
     property int feeds
     property bool isup
     property var db
+    allowedOrientations: [Orientation.Portrait,Orientation.Landscape,Orientation.Portrait | Orientation.Landscape][alor]
 
     function initDb() {
         ttRSS.db = Sql.LocalStorage.openDatabaseSync("TTRSS", "1.0", "Saved state for TT-RSS", 1000);
@@ -65,8 +67,7 @@ ApplicationWindow
         ttRSS.pass=dbGet('pass',ttRSS.pass);
         ttRSS.dlim=dbGet('dlim',ttRSS.dlim);
         ttRSS.txsz=dbGet('txsz',ttRSS.txsz);
-        console.log("Font size ",Theme.fontSizeTiny,' ',Theme.fontSizeExtraSmall, " ", Theme.fontSizeSmall);
-        console.log("Font color ",Theme.primaryColor, " ", Theme.highlightColor);
+        ttRSS.alor=dbGet('alor',ttRSS.alor);
         if(ttRSS.pass!=='')
             ttRSS.svpw=true;
         getConfig();
@@ -76,6 +77,7 @@ ApplicationWindow
         dbSet('user',ttRSS.user);
         dbSet('dlim',ttRSS.dlim);
         dbSet('txsz',ttRSS.txsz);
+        dbSet('alor',ttRSS.alor);
         if (ttRSS.svpw)
             dbSet('pass',ttRSS.pass);
     }
@@ -110,7 +112,7 @@ ApplicationWindow
         console.log("Reconfiguring: ",proceed);
         while(pageStack.busy) {console.log('Waiting...')}
         var dialog = pageStack.push(Qt.resolvedUrl("pages/Settings.qml"),
-                                    {url:ttRSS.url,user:ttRSS.user,pass:ttRSS.pass,txsz:ttRSS.txsz,dlim:ttRSS.dlim},
+                                    {url:ttRSS.url,user:ttRSS.user,pass:ttRSS.pass,txsz:ttRSS.txsz,dlim:ttRSS.dlim,alor:ttRSS.alor},
                                     PageStackAction.Immediate);
         console.log('Waiting for action: ',dialog);
         dialog.accepted.connect(function(){
@@ -120,6 +122,7 @@ ApplicationWindow
             ttRSS.svpw=dialog.svpw;
             ttRSS.dlim=dialog.dlim;
             ttRSS.txsz=dialog.txsz;
+            ttRSS.alor=dialog.alor;
             storeSettings();
             if (proceed !== undefined)
                 proceed();

@@ -8,6 +8,7 @@ Dialog {
     property alias dlim: dlim.checked
     property alias svpw: svpw.checked
     property alias txsz: txtSize.value
+    property alias alor: orient.value
     DialogHeader {
         acceptText: "Save"
         cancelText: "Cancel"
@@ -60,6 +61,15 @@ Dialog {
             stepSize: 4
             valueText: ['Tiny','Small','Medium','Large'][(value-20)/4]
             label: 'Text Size'
+        }
+        Slider {
+            id: orient
+            width: parent.width
+            minimumValue: 0
+            maximumValue: 2
+            stepSize: 1
+            valueText: ['Portrait','Landscape','Both'][value]
+            label: 'Allowed Orientation'
         }
     }
 }

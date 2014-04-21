@@ -3,12 +3,13 @@ import Sailfish.Silica 1.0
 
 Dialog {
     id: page
+    anchors.fill: parent
     DialogHeader {
         id: cTitle
     }
     Label {
         id: cMessage
-        anchors.fill: parent
+        anchors.centerIn: parent
         //text: "Alert!"
     }
     property alias title: cTitle.acceptText

@@ -10,7 +10,8 @@ TARGET = harbour-ttrss
 
 CONFIG += sailfishapp
 
-SOURCES += src/TTRSS.cpp
+SOURCES += src/TTRSS.cpp \
+    src/abstractrssitem.cpp
 
 OTHER_FILES += \
     qml/cover/CoverPage.qml \
@@ -24,4 +25,7 @@ OTHER_FILES += \
     qml/pages/Article.qml \
     harbour-ttrss.desktop \
     qml/harbour-ttrss.qml
+
+HEADERS += \
+    src/abstractrssitem.h
 

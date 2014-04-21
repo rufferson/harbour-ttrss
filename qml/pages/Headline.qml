@@ -105,6 +105,7 @@ getHeadlines(feed_id:-3): fresh
 
 Page {
     id: pgHeadlines
+    allowedOrientations: ttRSS.allowedOrientations
     property ListModel lmParent
     property int idItem
     property string title: (lmParent===null)?'Special':lmParent.get(idItem).title
@@ -146,6 +147,14 @@ Page {
                 MenuItem {
                     text: "Set Unread"
                     onClicked: liHeadline.setUnRead(model.id,index)
+                }
+                MenuItem {
+                    text: "Toggle Stared"
+                    onClicked: liHeadline.toggleStar(model.id,index)
+                }
+                MenuItem {
+                    text: "Toggle Published"
+                    onClicked: liHeadline.togglePub(model.id,index)
                 }
             }
             Label {
@@ -196,7 +205,7 @@ Page {
                 id: footer
                 width: parent.width
                 anchors.top: article.bottom
-                text: "Date: "+new Date(model.updated*1000)
+                text: "Date: "+new Date(model.updated*1000)+'| Star: '+((model.marked)?'on ':'off')+'| Pub: '+((model.published)?'on ':'off')
                 font.pixelSize: Theme.fontSizeTiny
             }
             Separator {
@@ -291,6 +300,32 @@ Results:  [<img src="http://www.golem.de/1401/104201-72320-i_rc.jpg",http://www.
                         lmHeadline.setProperty(index,'unread',true);
                         lmParent.setProperty(idItem,'unread',(pgHeadlines.unread+1));
                         console.log("Unread left: ",pgHeadlines.unread);
+                    }
+                });
+            }
+            function toggleStar(article_id,index) {
+                var data = {
+                    op: "updateArticle",
+                    article_ids: article_id,
+                    mode:2,
+                    field:0
+                };
+                remote_call(data,function(ret) {
+                    if(typeof index === 'number') {
+                        lmHeadline.setProperty(index,'marked',!model.marked);
+                    }
+                });
+            }
+            function togglePub(article_id,index) {
+                var data = {
+                    op: "updateArticle",
+                    article_ids: article_id,
+                    mode:2,
+                    field:1
+                };
+                remote_call(data,function(ret) {
+                    if(typeof index === 'number') {
+                        lmHeadline.setProperty(index,'published',!model.published);
                     }
                 });
             }

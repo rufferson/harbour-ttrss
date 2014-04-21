@@ -54,6 +54,7 @@ import Sailfish.Silica 1.0
 */
 Page {
     id: pgArticle
+    allowedOrientations: ttRSS.allowedOrientations
     property var hdr
     SilicaWebView {
         id: wvArticle

@@ -44,7 +44,7 @@ Column {
             text: cat.title
             width: parent.width-70
             font.bold: cat.unread > 0
-            font.pixelSize: ttRSS.txsz+12//Theme.fontSizeMedium
+            font.pixelSize: ttRSS.txsz+12
             font.family: Theme.fontFamilyHeading
         }
         Label {
@@ -52,7 +52,7 @@ Column {
             width: 70
             horizontalAlignment: Text.AlignRight
             font.bold: cat.unread > 0
-            font.pixelSize: ttRSS.txsz+12//Theme.fontSizeMedium
+            font.pixelSize: ttRSS.txsz+12
         }
     }
     Separator {
@@ -65,14 +65,13 @@ Column {
     SilicaListView {
         id: lvFeeds
         width: parent.width
-        contentHeight: contentItem.childrenRect.height
-        height: childrenRect.height
+        height: contentItem.childrenRect.height
         delegate: ListItem {
             contentHeight: ttRSS.txsz*2+8
             Label {
                 anchors.fill: parent
                 text: '('+model.unread+') '+model.title
-                font.pixelSize: ttRSS.txsz+8//Theme.fontSizeSmall
+                font.pixelSize: ttRSS.txsz+8
                 font.bold: model.unread > 0
             }
             onClicked: pageStack.push(Qt.resolvedUrl("Headline.qml"),{idItem:index,lmParent:lmFeeds});
@@ -85,6 +84,16 @@ Column {
                     lmFeeds.setProperty(index,'unread',0);
                 });
             }
+            function unsubscribe(){
+                var data = {
+                    op: "unsubscribeFeed",
+                    feed_id: model.id,
+                };
+                remote_call(data, function(ret) {
+                    //lmFeeds.setProperty(index,'unread',0);
+                });
+            }
+
             menu: ContextMenu {
                 id: ctxMenu
                 closeOnActivation: true
@@ -92,12 +101,15 @@ Column {
                     text: "Set All Read"
                     onClicked: setAllRead()
                 }
+                MenuItem {
+                    text: "Unsubscribe Feed"
+                    onClicked: unsubscribe()
+                }
             }
         }
         model: ListModel {
             id: lmFeeds
         }
-        //Component.onCompleted: getFeeds()
         function updateFeed(feed) {
             for(var i=0;i<lmFeeds.count;i++) {
                 var li=lmFeeds.get(i);

@@ -34,6 +34,7 @@ import Sailfish.Silica 1.0
 
 Page {
     id: page
+    allowedOrientations: ttRSS.allowedOrientations//Orientation.Portrait | Orientation.Landscape//Orientation.All
 
     SilicaListView {
         id: lvCategories
@@ -44,42 +45,82 @@ Page {
                 text: "Settings"
                 onClicked: ttRSS.getSettings();
             }
-
-            MenuItem {
-                text: "All Articles"
-                onClicked: pageStack.push(Qt.resolvedUrl("Headline.qml"),{idItem:-4})
-            }
-            MenuItem {
-                text: "All Unread"
-                onClicked: pageStack.push(Qt.resolvedUrl("Headline.qml"),{idItem:-3})
-            }
-            MenuItem {
-                text: "All Starred"
-                onClicked: pageStack.push(Qt.resolvedUrl("Headline.qml"),{idItem:-1})
-            }
-        }
-        PushUpMenu {
             MenuItem {
                 text: "Refresh"
                 onClicked: getCategories()
             }
-            MenuItem {
-                text: "Published"
-                onClicked: pageStack.push(Qt.resolvedUrl("Headline.qml"),{idItem:-2})
-            }
-            MenuItem {
-                text: "Archived"
-                onClicked: pageStack.push(Qt.resolvedUrl("Headline.qml"),{idItem:0})
-            }
         }
-        PageHeader {
-            title: "TT RSS Light "
+        header: PageHeader {
+            width: parent.width
+            height: 42
+            title: "TT-RSS: is"+((ttRSS.isup)?" ":" not ")+'updating '+ttRSS.feeds+' feeds'
         }
         ViewPlaceholder {
             enabled: lvCategories.count == 0
             text: "No Data"
-            hintText: "Pull-up Refresh to get data"
+            hintText: "Pull-down and Refresh to get data"
         }
+        footer: Column {
+            width: parent.width
+            Label {
+                width: parent.width
+                text: 'Specials: breakdown'
+                font.pixelSize: ttRSS.txsz+12
+                font.family: Theme.fontFamilyHeading
+                //font.bold: true
+            }
+            Separator {
+                width: parent.width
+                height: 3
+                color: Theme.secondaryHighlightColor
+            }
+            ListItem {
+                contentHeight: ttRSS.txsz*2+8
+                Label {
+                    anchors.fill: parent
+                    text: "(-) All Articles"
+                    font.pixelSize: ttRSS.txsz+8
+                }
+                onClicked: pageStack.push(Qt.resolvedUrl("Headline.qml"),{idItem:-4})
+            }
+            ListItem {
+                contentHeight: ttRSS.txsz*2+8
+                Label {
+                    anchors.fill: parent
+                    text: "(-) All Unread"
+                    font.pixelSize: ttRSS.txsz+8
+                }
+                onClicked: pageStack.push(Qt.resolvedUrl("Headline.qml"),{idItem:-3})
+            }
+            ListItem {
+                contentHeight: ttRSS.txsz*2+8
+                Label {
+                    anchors.fill: parent
+                    text: "(-) Published"
+                    font.pixelSize: ttRSS.txsz+8
+                }
+                onClicked: pageStack.push(Qt.resolvedUrl("Headline.qml"),{idItem:-2})
+            }
+            ListItem {
+                contentHeight: ttRSS.txsz*2+8
+                Label {
+                    anchors.fill: parent
+                    text: "(-) All Starred"
+                    font.pixelSize: ttRSS.txsz+8
+                }
+                onClicked: pageStack.push(Qt.resolvedUrl("Headline.qml"),{idItem:-1})
+            }
+            ListItem {
+                contentHeight: ttRSS.txsz*2+8
+                Label {
+                    anchors.fill: parent
+                    text: "(-) Archived"
+                    font.pixelSize: ttRSS.txsz+8
+                }
+                onClicked: pageStack.push(Qt.resolvedUrl("Headline.qml"),{idItem:0})
+            }
+        }
+
         VerticalScrollDecorator {}
         model: lmCategories
         delegate: Category { cat: model }
