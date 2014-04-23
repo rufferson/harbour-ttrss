@@ -59,7 +59,7 @@ ApplicationWindow
             console.log("Created TTRSS DB: ",res);
         });
     }
-    function loadSettings() {
+    function loadSettings(proceed) {
         initDb();
         ttRSS.url=dbGet('url',ttRSS.url);
         ttRSS.sid=dbGet('sid',ttRSS.sid);
@@ -70,7 +70,7 @@ ApplicationWindow
         ttRSS.alor=dbGet('alor',ttRSS.alor);
         if(ttRSS.pass!=='')
             ttRSS.svpw=true;
-        getConfig();
+        getConfig(proceed);
     }
     function storeSettings() {
         dbSet('url',ttRSS.url);
@@ -106,11 +106,12 @@ ApplicationWindow
       return result;
     }
     function showAlert (message, title) {
+        pageStack.completeAnimation();
         pageStack.push(Qt.resolvedUrl("pages/Alert.qml"),{message:message,title:title+' Error'});
     }
     function getSettings(proceed) {
         console.log("Reconfiguring: ",proceed);
-        while(pageStack.busy) {console.log('Waiting...')}
+        pageStack.completeAnimation();
         var dialog = pageStack.push(Qt.resolvedUrl("pages/Settings.qml"),
                                     {url:ttRSS.url,user:ttRSS.user,pass:ttRSS.pass,txsz:ttRSS.txsz,dlim:ttRSS.dlim,alor:ttRSS.alor},
                                     PageStackAction.Immediate);
@@ -130,9 +131,8 @@ ApplicationWindow
     }
 
     function remote_call(data, success, error) {
-        var url = ttRSS.url;
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", url + "/api/");
+        xhr.open("POST", ttRSS.url + "/api/");
         xhr.onreadystatechange = function() {
             if(xhr.readyState === xhr.DONE) {
                 if(xhr.status === 200) {
@@ -169,10 +169,20 @@ ApplicationWindow
             }
         };
         if(data.op !== 'login') {
+            console.log('Enreaching',data.op);
             if(ttRSS.sid!='')
                 data.sid = ttRSS.sid;
-            else if(ttRSS.user=='' && ttRSS.pass=='')
-                getSettings(login(function(){data.sid=ttRSS.sid}))
+            else if(ttRSS.user=='' && ttRSS.pass=='') {
+                getSettings(function(){
+                    login(function(){
+                        data.sid=ttRSS.sid;
+                        console.log('Firing',data.op);
+                        xhr.send(JSON.stringify(data));
+                    })
+                });
+                return;
+            }
+            console.log('Firing',data.op);
         }
         xhr.send(JSON.stringify(data));
     }
@@ -193,115 +203,17 @@ ApplicationWindow
             },
             getSettings);
     }
-    function getConfig() {
+    function getConfig(proceed) {
         var data = {
             op: "getConfig",
         };
+        console.log("getConfig",ttRSS.sid);
         ttRSS.remote_call(data,
             function(ret){
                 ttRSS.feeds=ret.content.num_feeds;
                 ttRSS.isup=ret.content.daemon_is_running;
+                if (proceed !== undefined)
+                    proceed();
             },function(){});
     }
 }
-
-/*
-function setLabel(url, context, article_id, label_id) {
-    var data = {
-        op: "setArticleLabel",
-        sid: context.session_id,
-        article_ids: article_id,
-        label_id: label_id,
-        assign:true,
-        mode:0,
-        field:2
-    6440};6440
-    remote_call(url,data);
-}
-
-function removeLabel(url, context, article_id, label_id) {
-    var data = {
-        op: "setArticleLabel",
-        sid: context.session_id,
-        article_ids: article_id,
-        label_id: label_id,
-        assign:false,
-        mode:0,
-        field:2
-    };
-    remote_call(url,data);
-}
-
-
-function addStar(url, context, article_id) {
-    var data = {
-        op: "updateArticle",
-        sid: context.session_id,
-        article_ids: article_id,
-        mode:1,
-        field:0
-    };
-    remote_call(url,data);
-}
-
-function subscribe(url, context, feedurl, categoryID) {
-    var data = {
-        op: "subscribeToFeed",
-        sid: context.session_id,
-        feed_url: feedurl,
-        category_id:categoryID
-    };
-    remote_call(url,data,
-          function(ret)
-          {
-              context.subscribe(feedurl,ret.content.status);
-          }
-    );
-}
-
-function unSubscribe(url, context, feed_id) {
-    var data = {
-        op: "unsubscribeFeed",
-        sid: context.session_id,
-        feed_id: feed_id
-    };
-    remote_call(url, data,
-          function(ret)
-          {
-              context.unsubscribe(feed_id,ret.content.status);
-          }
-    );
-}
-            function serialize(object, maxDepth) {
-                function _processObject(object, maxDepth, level) {
-                    var output = Array()
-                    var pad = " "
-                    if (maxDepth == undefined) {
-                        maxDepth = -1
-                    }
-                    if (level == undefined) {
-                        level = 0
-                    }
-                    var padding = Array(level + 1).join(pad)
-
-                    output.push((Array.isArray(object) ? "[" : "{"))
-                    var fields = Array()
-                    for (var key in object) {
-                        var keyText = Array.isArray(object) ? "" : ("\"" + key + "\": ")
-                        if (typeof (object[key]) == "object" && key != "parent" && maxDepth != 0) {
-                            var res = _processObject(object[key], maxDepth > 0 ? maxDepth - 1 : -1, level + 1)
-                            fields.push(padding + pad + keyText + res)
-                        } else {
-                            fields.push(padding + pad + keyText + "\"" + object[key] + "\"")
-                        }
-                    }
-                    output.push(fields.join(",\n"))
-                    output.push(padding + (Array.isArray(object) ? "]" : "}"))
-
-                    return output.join("\n")
-                }
-
-                return _processObject(object, maxDepth)
-            }
-
-*/

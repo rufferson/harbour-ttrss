@@ -128,8 +128,13 @@ Page {
     ListModel {
         id: lmCategories
     }
-    Component.onCompleted:ttRSS.loadSettings()//;getCategories()}
-    onStatusChanged: {if(status===PageStatus.Activating)getCategories(true)}
+    //Component.onCompleted:ttRSS.loadSettings(getCategories)
+    onStatusChanged: {
+        if(status===PageStatus.Activating)
+            getCategories(true)
+        else if(status===PageStatus.Active && lmCategories.count==0)
+            ttRSS.loadSettings(getCategories)
+    }
 
     function updateCategory(cat) {
         for(var i=0;i<lmCategories.count;i++) {
@@ -148,23 +153,23 @@ Page {
     }
 
     function getCategories(soft) {
+        if(soft && lmCategories.count==0)
+            return;
         var data = {
             op: "getCategories",
             unread_only:false
         };
         ttRSS.remote_call(data,
             function(ret) {
-                if(soft!==true)
+                if(!soft)
                     lmCategories.clear();
-                else if(lmCategories.count<1)
-                    soft=false;
                 for(var cat in ret.content) {
                     console.log('Adding LM: ',ret.content[cat])
                     if(typeof ret.content[cat].id==='string')
                         ret.content[cat].id=parseInt(ret.content[cat].id);
                     if(typeof ret.content[cat].unread==='string')
                         ret.content[cat].unread=parseInt(ret.content[cat].unread);
-                    if(soft===true) {
+                    if(soft) {
                         updateCategory(ret.content[cat]);
                     } else {
                         if(ret.content[cat].id>=0)

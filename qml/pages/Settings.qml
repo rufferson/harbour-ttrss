@@ -9,37 +9,39 @@ Dialog {
     property alias svpw: svpw.checked
     property alias txsz: txtSize.value
     property alias alor: orient.value
-    DialogHeader {
-        acceptText: "Save"
-        cancelText: "Cancel"
-    }
+    anchors.fill: parent
+    canAccept: (url.text && user.text && pass.text)
     Column {
         width: parent.width
-        anchors.centerIn: parent
+        //anchors.centerIn: parent
+        DialogHeader {
+            acceptText: "Save"
+            cancelText: "Cancel"
+        }
 
-        Label { text: "TT-RSS API URL"}
         TextField {
             id: url
-            placeholderText: "https://www.example.com/tt-rss/api/"
+            placeholderText: "https://www.example.com/tt-rss"
+            label: "TT-RSS Application URL"
             EnterKey.enabled: text.length > 0
             EnterKey.onClicked: user.focus = true
             EnterKey.iconSource: "image://theme/icon-m-enter-next"
             width: parent.width
         }
-        Label {text:"User Name"}
         TextField {
             id:user
             placeholderText: 'Login'
+            label: "User Name"
             EnterKey.enabled: text.length > 0
             EnterKey.onClicked: pass.focus = true
             EnterKey.iconSource: "image://theme/icon-m-enter-next"
             width: parent.width
         }
-        Label {text:"Password"}
         TextField {
             id:pass
             echoMode: TextInput.PasswordEchoOnEdit
             placeholderText: 'Password'
+            label: "User Password"
             EnterKey.enabled: text.length > 0
             EnterKey.onClicked: parent.parent.accept()
             width: parent.width
