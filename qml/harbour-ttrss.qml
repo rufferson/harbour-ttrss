@@ -50,6 +50,7 @@ ApplicationWindow
     property int feeds
     property bool isup
     property var db
+    property bool inconfig: false
     allowedOrientations: [Orientation.Portrait,Orientation.Landscape,Orientation.Portrait | Orientation.Landscape][alor]
 
     function initDb() {
@@ -106,11 +107,13 @@ ApplicationWindow
       return result;
     }
     function showAlert (message, title) {
+        if(inconfig)return;
         pageStack.completeAnimation();
         pageStack.push(Qt.resolvedUrl("pages/Alert.qml"),{message:message,title:title+' Error'});
     }
     function getSettings(proceed) {
         console.log("Reconfiguring: ",proceed);
+        inconfig=true;
         pageStack.completeAnimation();
         var dialog = pageStack.push(Qt.resolvedUrl("pages/Settings.qml"),
                                     {url:ttRSS.url,user:ttRSS.user,pass:ttRSS.pass,txsz:ttRSS.txsz,dlim:ttRSS.dlim,alor:ttRSS.alor},
@@ -125,9 +128,11 @@ ApplicationWindow
             ttRSS.txsz=dialog.txsz;
             ttRSS.alor=dialog.alor;
             storeSettings();
+            inconfig=false;
             if (proceed !== undefined)
                 proceed();
         });
+        dialog.rejected.connect(function(){inconfig=false})
     }
 
     function remote_call(data, success, error) {

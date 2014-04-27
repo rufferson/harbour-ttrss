@@ -56,7 +56,7 @@ CoverBackground {
         visible: updating
         anchors.centerIn: parent
         RotationAnimation on rotation {
-                running: updating
+                running: updating && (parent.parent.status===Cover.Active)
                 duration: 1000
                 loops: Animation.Infinite
                 from: 0; to: 360
