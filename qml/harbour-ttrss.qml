@@ -164,11 +164,10 @@ ApplicationWindow
                     if (url != "" && url != undefined)  {
                         showAlert("Host unreachable:" + url + "\nPlease Check Network","TTRSS");
                     } else {
-                        if(error !== undefined)
-                            error(json);
-                        else
-                            showAlert("Network Error, Please Check Network","TTRSS");
+                        showAlert("Network Error, Please Check Network","TTRSS");
                     }
+                    if(error !== undefined)
+                        error("Network Communication Error");
                     getSettings();
                 }
             }

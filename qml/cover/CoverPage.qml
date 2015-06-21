@@ -1,6 +1,6 @@
 /*
-  Copyright (C) 2013 Jolla Ltd.
-  Contact: Thomas Perl <thomas.perl@jollamobile.com>
+  Copyright (C) 2015 Ruslan N. Marchenko.
+  Contact:  me@ruff.mobi
   All rights reserved.
 
   You may use this file under the terms of BSD license as follows:
@@ -34,10 +34,11 @@ import Sailfish.Silica 1.0
 CoverBackground {
     property int unread
     property bool updating: false
+    property string err_string: ""
     property bool covering: status == Cover.Active
     Column {
         enabled: visible
-        visible: !updating
+        visible: !updating && err_string===""
         anchors.centerIn: parent
         anchors.top: parent.top
         Label { text: "Subscribed"}
@@ -54,7 +55,7 @@ CoverBackground {
     Image {
         source: "image://theme/icon-cover-refresh"
         enabled: visible
-        visible: updating
+        visible: updating && err_string===""
         anchors.centerIn: parent
         RotationAnimation on rotation {
                 running: updating && covering
@@ -62,6 +63,16 @@ CoverBackground {
                 loops: Animation.Infinite
                 from: 0; to: 360
             }
+    }
+    TextArea {
+        anchors.fill: parent
+        enabled: visible
+        visible: !updating && err_string!==""
+        wrapMode: TextEdit.WordWrap
+        horizontalAlignment: TextEdit.AlignHCenter
+        verticalAlignment: TextEdit.AlignVCenter
+        readOnly: true
+        text: err_string
     }
     CoverActionList {
         id: coverAction
@@ -73,11 +84,15 @@ CoverBackground {
     onStatusChanged: {if(status==Cover.Activating)getUnread()}
     function getUnread() {
         updating=true;
+        err_string="";
         ttRSS.getConfig();
         var data = {
             op: "getUnread",
         };
-        ttRSS.remote_call(data,function(ret){unread=parseInt(ret.content.unread);updating=false},function(){updating=false});
+        console.log("Getting cover data",updating,covering)
+        ttRSS.remote_call(data,
+                          function(ret){unread=parseInt(ret.content.unread);updating=false},
+                          function(err){err_string=err;updating=false});
     }
 }
 /* vim:ft=javascript ts=4 sts=4 et: */
