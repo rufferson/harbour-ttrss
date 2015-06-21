@@ -169,7 +169,7 @@ ApplicationWindow
                         else
                             showAlert("Network Error, Please Check Network","TTRSS");
                     }
-
+                    getSettings();
                 }
             }
         };

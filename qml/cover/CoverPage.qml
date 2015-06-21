@@ -34,6 +34,7 @@ import Sailfish.Silica 1.0
 CoverBackground {
     property int unread
     property bool updating: false
+    property bool covering: status == Cover.Active
     Column {
         enabled: visible
         visible: !updating
@@ -56,7 +57,7 @@ CoverBackground {
         visible: updating
         anchors.centerIn: parent
         RotationAnimation on rotation {
-                running: updating && (parent.parent.status===Cover.Active)
+                running: updating && covering
                 duration: 1000
                 loops: Animation.Infinite
                 from: 0; to: 360
@@ -79,3 +80,4 @@ CoverBackground {
         ttRSS.remote_call(data,function(ret){unread=parseInt(ret.content.unread);updating=false},function(){updating=false});
     }
 }
+/* vim:ft=javascript ts=4 sts=4 et: */
