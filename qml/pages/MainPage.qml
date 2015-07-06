@@ -1,6 +1,6 @@
 /*
-  Copyright (C) 2013 Jolla Ltd.
-  Contact: Thomas Perl <thomas.perl@jollamobile.com>
+  Copyright (C) 2015 Ruslan N. Marchenko
+  Contact: me@ruff.mobi
   All rights reserved.
 
   You may use this file under the terms of BSD license as follows:
@@ -52,8 +52,9 @@ Page {
         }
         header: PageHeader {
             width: parent.width
-            height: 42
-            title: "TT-RSS: is"+((ttRSS.isup)?" ":" not ")+'updating '+ttRSS.feeds+' feeds'
+            //height: 42
+            title: "TT-RSS: "+ttRSS.feeds+' feeds'
+            description: ((ttRSS.isup)?" ":" not ")+'updating '
         }
         ViewPlaceholder {
             enabled: lvCategories.count == 0
@@ -62,6 +63,8 @@ Page {
         }
         footer: Column {
             width: parent.width
+            enabled: lvCategories.count > 0
+            visible: enabled
             Label {
                 width: parent.width
                 text: 'Specials: breakdown'

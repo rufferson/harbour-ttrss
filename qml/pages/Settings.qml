@@ -9,7 +9,7 @@ Dialog {
     property alias svpw: svpw.checked
     property alias txsz: txtSize.value
     property alias alor: orient.value
-    anchors.fill: parent
+    //anchors.fill: parent
     canAccept: (url.text && user.text && pass.text)
     Column {
         width: parent.width

@@ -3,7 +3,7 @@ import Sailfish.Silica 1.0
 
 Dialog {
     id: page
-    anchors.fill: parent
+    //anchors.fill: parent
     DialogHeader {
         id: cTitle
     }

@@ -1,6 +1,6 @@
 /*
-  Copyright (C) 2013 Jolla Ltd.
-  Contact: Thomas Perl <thomas.perl@jollamobile.com>
+  Copyright (C) 2015 Ruslan N. Marchenko
+  Contact: me@ruff.mobi
   All rights reserved.
 
   You may use this file under the terms of BSD license as follows:
@@ -112,7 +112,8 @@ ApplicationWindow
         pageStack.push(Qt.resolvedUrl("pages/Alert.qml"),{message:message,title:title+' Error'});
     }
     function getSettings(proceed) {
-        console.log("Reconfiguring: ",proceed);
+        console.log("Reconfiguring?[",inconfig,"] with depth",pageStack.depth,":",proceed);
+        if(inconfig) return;
         inconfig=true;
         pageStack.completeAnimation();
         var dialog = pageStack.push(Qt.resolvedUrl("pages/Settings.qml"),
@@ -128,9 +129,9 @@ ApplicationWindow
             ttRSS.txsz=dialog.txsz;
             ttRSS.alor=dialog.alor;
             storeSettings();
-            inconfig=false;
             if (proceed !== undefined)
                 proceed();
+            inconfig=false;
         });
         dialog.rejected.connect(function(){inconfig=false})
     }
@@ -161,10 +162,12 @@ ApplicationWindow
                             success(json);
                     }
                 } else {
-                    if (url != "" && url != undefined)  {
-                        showAlert("Host unreachable:" + url + "\nPlease Check Network","TTRSS");
+                    if(xhr.status == 0) {
+                        showAlert("Check Settings and/or Connectivity","Network")
+                    } else if(xhr.status>0 && url != "" && url != undefined)  {
+                        showAlert("Server at " + url + "\n replied with status " + xhr.status,"Server");
                     } else {
-                        showAlert("Network Error, Please Check Network","TTRSS");
+                        showAlert("Unknown Error, Please Check Something","Status "+xhr.status);
                     }
                     if(error !== undefined)
                         error("Network Communication Error");
