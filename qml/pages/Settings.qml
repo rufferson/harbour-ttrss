@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.2
 import Sailfish.Silica 1.0
 
 Dialog {
@@ -15,6 +15,7 @@ Dialog {
         width: parent.width
         //anchors.centerIn: parent
         DialogHeader {
+            title: "TTRSS-Light v0.5"
             acceptText: "Save"
             cancelText: "Cancel"
         }

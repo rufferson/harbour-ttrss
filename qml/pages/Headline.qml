@@ -28,7 +28,7 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-import QtQuick 2.0
+import QtQuick 2.2
 import Sailfish.Silica 1.0
 /*
 getHeadlines(feed_id:-3): fresh
@@ -140,7 +140,8 @@ Page {
         delegate: ListItem {
             id: liHeadline
             width: parent.width
-            contentHeight: contentItem.childrenRect.height
+            //contentHeight: contentItem.childrenRect.height
+            contentHeight: content.height
             menu: ContextMenu {
                 id: ctxMenu
                 closeOnActivation: true
@@ -157,74 +158,74 @@ Page {
                     onClicked: liHeadline.togglePub(model.id,index)
                 }
             }
-            Label {
-                id: title
-                anchors.top: parent.top
+            Column {
+                id: content
+                spacing: 1
                 width: parent.width
-                text: model.title
-                textFormat: Text.RichText
-                font.pixelSize: ttRSS.txsz+4//Theme.fontSizeSmall
-                font.bold: model.unread
-            }
-            Label {
-                id: excerpt
-                text: model.excerpt
-                anchors.top: title.bottom
-                width: parent.width
-                textFormat: Text.RichText
-                baseUrl: model.link
-                wrapMode: Text.WordWrap
-                font.pixelSize: ttRSS.txsz//Theme.fontSizeTiny
-                font.bold: model.unread
-            }
-            Label {
-                id: article
-                width: parent.width
-                anchors.top: excerpt.bottom
-                text: ""
-                baseUrl: model.link
-                textFormat: Text.RichText
-                linkColor: Theme.secondaryHighlightColor
-                font.pixelSize: ttRSS.txsz//Theme.fontSizeTiny
-                font.bold: true//model.unread
-                wrapMode: Text.WordWrap
-                height: 1
-                opacity: 0//(height>1)?1:0
-            }
-            Button {
-                id: btnLink
-                text: 'Open Original Article'
-                width: parent.width
-                anchors.top: article.bottom
-                height: 1
-                opacity: 0//(height>1)?1:0
-                onClicked: pageStack.push(Qt.resolvedUrl("Article.qml"),{hdr:model})
-                preventStealing: true
-            }
-            Label {
-                id: footer
-                width: parent.width
-                anchors.top: article.bottom
-                text: "Date: "+new Date(model.updated*1000)+'| Star: '+((model.marked)?'on ':'off')+'| Pub: '+((model.published)?'on ':'off')
-                font.pixelSize: Theme.fontSizeTiny
-            }
-            Separator {
-                anchors.top: footer.bottom
-                width: parent.width
-                height: 3
-                color: highlighted ? Theme.highlightColor : Theme.secondaryHighlightColor
+                Label {
+                    id: title
+                    width: parent.width
+                    text: model.title
+                    textFormat: Text.RichText
+                    font.pixelSize: ttRSS.txsz+4//Theme.fontSizeSmall
+                    font.bold: model.unread
+                }
+                Label {
+                    id: excerpt
+                    text: model.excerpt
+                    width: parent.width
+                    textFormat: Text.RichText
+                    baseUrl: model.link
+                    wrapMode: Text.WordWrap
+                    font.pixelSize: ttRSS.txsz//Theme.fontSizeTiny
+                    font.bold: model.unread
+                    visible: opacity > 0
+                }
+                Label {
+                    id: article
+                    width: parent.width
+                    text: ""
+                    baseUrl: model.link
+                    textFormat: Text.RichText
+                    linkColor: Theme.secondaryHighlightColor
+                    font.pixelSize: ttRSS.txsz//Theme.fontSizeTiny
+                    font.bold: true//model.unread
+                    wrapMode: Text.WordWrap
+                    visible: opacity > 0
+                    opacity: 0//(height>1)?1:0
+                }
+                Button {
+                    id: btnLink
+                    text: 'Open Original Article'
+                    width: parent.width
+                    height: 1
+                    opacity: 0//(height>1)?1:0
+                    onClicked: pageStack.push(Qt.resolvedUrl("Article.qml"),{hdr:model})
+                    preventStealing: true
+                    visible: opacity > 0
+                }
+                Label {
+                    id: footer
+                    width: parent.width
+                    text: "Date: "+new Date(model.updated*1000)+'| Star: '+((model.marked)?'on ':'off')+'| Pub: '+((model.published)?'on ':'off')
+                    font.pixelSize: Theme.fontSizeTiny
+                }
+                Separator {
+                    width: parent.width
+                    height: 3
+                    color: highlighted ? Theme.highlightColor : Theme.secondaryHighlightColor
+                }
             }
             states: State {
                 name: "full"
                 PropertyChanges { target: excerpt; height: 1; opacity:0 }
                 PropertyChanges { target: article; height: article.contentHeight; opacity:1 }
-                PropertyChanges { target: btnLink; height: 50;opacity:1 }
-                PropertyChanges { target: title;   wrapMode: Text.WordWrap }
-                PropertyChanges { target: footer;  anchors.top: btnLink.bottom }
+                PropertyChanges { target: btnLink; height: Theme.itemSizeSmall; opacity:1 }
+                PropertyChanges { target: title; wrapMode: Text.WordWrap; height: title.contentHeight }
             }
             transitions: Transition {
                 ParallelAnimation {
-                    NumberAnimation { duration: 600; properties: "opacity,contentY,height,top" }
+                    NumberAnimation { duration: 600; properties: "opacity,height" }
                 }
             }
 

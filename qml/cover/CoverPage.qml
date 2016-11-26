@@ -28,7 +28,7 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-import QtQuick 2.0
+import QtQuick 2.2
 import Sailfish.Silica 1.0
 
 CoverBackground {
@@ -36,6 +36,7 @@ CoverBackground {
     property bool updating: false
     property string err_string: ""
     property bool covering: status == Cover.Active
+    property int ts: 0
     Column {
         enabled: visible
         visible: !updating && err_string===""
@@ -83,6 +84,8 @@ CoverBackground {
     }
     onStatusChanged: {if(status==Cover.Activating)getUnread()}
     function getUnread() {
+        if((Date.now()-ts) < 300000) return;
+        ts = Date.now()
         updating=true;
         err_string="";
         ttRSS.getConfig();

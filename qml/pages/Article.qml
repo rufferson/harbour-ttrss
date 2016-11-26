@@ -28,8 +28,9 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-import QtQuick 2.0
+import QtQuick 2.2
 import Sailfish.Silica 1.0
+//import Sailfish.WebView 1.0
 
 /*
 {"seq":0,"status":0,"content":[
@@ -56,6 +57,14 @@ Page {
     id: pgArticle
     allowedOrientations: ttRSS.allowedOrientations
     property var hdr
+    /*
+    RawWebView {
+        id: wvArticle
+        anchors.fill: parent
+        url: hdr.link
+        active: true
+    }
+    /**/
     SilicaWebView {
         id: wvArticle
         anchors.fill: parent
@@ -74,5 +83,6 @@ Page {
                 onClicked: wvArticle.back()
             }
         }
+        /**/
     }
 }

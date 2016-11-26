@@ -28,7 +28,7 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-import QtQuick 2.0
+import QtQuick 2.2
 import Sailfish.Silica 1.0
 import QtQuick.LocalStorage 2.0 as Sql
 import "pages"
@@ -106,11 +106,6 @@ ApplicationWindow
       });
       return result;
     }
-    function showAlert (message, title) {
-        if(inconfig)return;
-        pageStack.completeAnimation();
-        pageStack.push(Qt.resolvedUrl("pages/Alert.qml"),{message:message,title:title+' Error'});
-    }
     function getSettings(proceed) {
         console.log("Reconfiguring?[",inconfig,"] with depth",pageStack.depth,":",proceed);
         if(inconfig) return;
@@ -135,10 +130,28 @@ ApplicationWindow
         });
         dialog.rejected.connect(function(){inconfig=false})
     }
+    function getConfig(proceed) {
+        var data = {
+            op: "getConfig",
+        };
+        console.log("getConfig",ttRSS.sid);
+        ttRSS.remote_call(data,
+            function(ret){
+                ttRSS.feeds=ret.content.num_feeds;
+                ttRSS.isup=ret.content.daemon_is_running;
+                if (proceed !== undefined)
+                    proceed();
+            },function(){});
+    }
 
+    function showAlert (message, title) {
+        if(inconfig)return;
+        pageStack.completeAnimation();
+        pageStack.push(Qt.resolvedUrl("pages/Alert.qml"),{message:message,title:title+' Error'});
+    }
     function remote_call(data, success, error) {
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", ttRSS.url + "/api/");
+        xhr.open("POST", ttRSS.url + "/api/index.php");
         xhr.onreadystatechange = function() {
             if(xhr.readyState === xhr.DONE) {
                 if(xhr.status === 200) {
@@ -209,18 +222,5 @@ ApplicationWindow
                     ok();
             },
             getSettings);
-    }
-    function getConfig(proceed) {
-        var data = {
-            op: "getConfig",
-        };
-        console.log("getConfig",ttRSS.sid);
-        ttRSS.remote_call(data,
-            function(ret){
-                ttRSS.feeds=ret.content.num_feeds;
-                ttRSS.isup=ret.content.daemon_is_running;
-                if (proceed !== undefined)
-                    proceed();
-            },function(){});
     }
 }
